@@ -71,4 +71,4 @@ ax2.legend(prop={"size": FONT_SZ}, ncol=3, loc='upper center', bbox_to_anchor=(0
 ax2.set_ylabel("Maximum flow accuracy", fontsize=FONT_SZ, labelpad=LABELPAD)
 ax2.tick_params(axis='y', labelsize=FONT_SZ)
 
-plt.savefig('./figures/experiments'+name+upscale+'.png')
+plt.savefig('./figures/experiments_'+name+upscale+'.png')
