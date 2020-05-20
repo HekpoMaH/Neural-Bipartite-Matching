@@ -1,0 +1,2 @@
+data.zip filter=lfs diff=lfs merge=lfs -text
+models_to_test.zip filter=lfs diff=lfs merge=lfs -text
