@@ -85,7 +85,7 @@ the working directory. Naming convention is as follows:
 each iteration of the Ford-Fulkerson algorithm* (several datapoints per graph)
 for augmenting path finding and BFS. `graph_only` datasets contain only input
 graphs (one datapoint per graph). Datasets generated with different edge
-probability than $$\frac{1}{4}$$ have their numerator and denominator appended
+probability than $`\frac{1}{4}`$ have their numerator and denominator appended
 after dataset name. Inside each dataset, raw and processed data is provided at
 different scales.
 
@@ -133,7 +133,7 @@ and it will save flow accuracy results in
 `results_where_the_same_ADESCRIPTIVEMODELNAME_BFS-based.txt`, one line per
 epoch, 10 numbers (runs) per epoch.
 
-If we now want test on a 2x scale with edge probability $$\frac{1}{5}$$, run:
+If we now want test on a 2x scale with edge probability $`\frac{1}{5}`$, run:
 ```
 python comparator.py --algorithms AugmentingPath --algorithms BFS --model-name ADESCRIPTIVEMODELNAME --use-BFS-for-termination --use-neural-bottleneck --use-neural-augmentation --processor-type MPNN models_to_test/MPNN/AugmentingPathPlusBFS --upscale _2x --probp 1 --probq 5
 ```
