@@ -155,9 +155,9 @@ If you want to test PNA without the STD aggregator, modify the
 
 Once results are calculated, plotting can be done by following the `plot.py`
 CLI. For `MODEL_NAME` use the **exact same name** `MODEL_NAME` you used when
-producing test results (different scale handled automatically). A figure will
-be created in the `figures` folder, following the naming conventions of the
-testing scripts.
+producing test results. A figure will be created in the `figures` folder,
+following the naming conventions of the testing scripts, e.g. different scale
+testing is appended automatically to the end of filename.
 
 As plotting for different edge probability distribution was not used,
 it is not yet supported.
