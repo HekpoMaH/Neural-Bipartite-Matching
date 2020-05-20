@@ -1,0 +1,25 @@
+import torch
+def get_hyperparameters():
+    return {
+        "dim_latent": 32,
+        "dim_nodes_AugmentingPath": 1,
+        "dim_nodes_AugmentingPath_integers": 1,
+        "dim_nodes_BFS": 1,
+        "dim_target": 2,
+        "dim_edges": 2,
+        "dim_edges_BFS": 1,
+        "dim_bits": 8,
+        "pna_aggregators": "mean min max std",
+        "pna_scalers": "identity amplification attenuation",
+        "batch_size": 32,
+        "walk_length": 5,
+        "max_threshold": 10,
+        "patience_limit": 10,
+        "growth_rate_sigmoid": 0.0020,
+        "sigmoid_offset": -300,
+        "device": "cuda" if torch.cuda.is_available() else "cpu",
+        "calculate_termination_statistics": True,
+        "lr": 0.000500,
+        "weight_decay": 0,
+        "bias": False,
+    }
