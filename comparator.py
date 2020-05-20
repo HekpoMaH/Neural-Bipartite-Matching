@@ -11,7 +11,6 @@ Options:
     --use-neural-bottleneck          Use the network to extract the bottleneck [default: False]
     --processor-type PROC            Type of processor. One of {MPNN, PNA, GAT}. [default: MPNN]
     --use-neural-augmentation        Use the network to provide the new forward capacities after augmenting the flow. (Backward capacity is total edge capacity minus forward) [default: False]
-    --use-ints                       Does the dataset use integers
     --probp P                        Probability P (P/Q) wired factor [default: 1]
     --probq Q                        Probability Q (P/Q) wired factor [default: 4]
     --recache                        Refresh the cache of real maximum flows [default: False]
@@ -83,6 +82,9 @@ if __name__ == "__main__":
         args["--model-name"] = "_" + args["--model-name"]
     upscale = args["--upscale"]
     use_bfs = args["--use-BFS-for-termination"]
+    args["--use-ints"] = True # Always uses integers
+    args["--probp"] = int(args["--probp"])
+    args["--probq"] = int(args["--probq"])
     algorithms_suffix = get_algorithms_suffix(args["--algorithms"])
 
     maxflow_real = read_real_maxflow_from_cache(upscale, args["--recache"], args["--probp"], args["--probq"])

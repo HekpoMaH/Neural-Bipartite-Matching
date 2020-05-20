@@ -5,7 +5,6 @@ Usage:
 Options:
     -h --help                        Show this screen.
     --algorithms ALGO                Which algorithms to add. One of {AugmentingPath, BFS}
-    --use-ints                       Does the dataset use integers
     --processor-type PROC            Type of processor. One of {MPNN, PNA, GAT}. [default: MPNN]
     --upscale UP                     Test on larger data. Remember to add underscore (e.g. _2x) [default: ]
 """
@@ -31,6 +30,7 @@ from flow_datasets import SingleIterationDataset
 from models import AlgorithmProcessor, AugmentingPathNetwork
 
 args = docopt(__doc__)
+args["--use-ints"] = True # Always uses integers
 print(args["--algorithms"])
 print(args["MODEL_TO_LOAD"])
 
