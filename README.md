@@ -76,10 +76,9 @@ Werkzeug==1.0.0
 ```
 
 ## Preparation
-Before running any training, unzip datasets/pre-trained models into the
-directory of the project.
+Before running any training, prepare datasets/pre-trained models.
 
-For the data, run `unzip data.zip -d .`. This extracts all datasets used into
+For the data, run `./gen_all.sh`. This generates all datasets used into
 the working directory. Naming convention is as follows:
 `{all_iter/bfs}_less_wired` for datasets containing training/testing data *per
 each iteration of the Ford-Fulkerson algorithm* (several datapoints per graph)
