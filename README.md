@@ -163,3 +163,10 @@ testing is appended automatically to the end of filename.
 
 As plotting for different edge probability distribution was not used,
 it is not yet supported.
+
+## Demo
+
+The Jupyter notebook `demo.ipynb` contains a standalone demo, which uses
+a trained model (extract models before running the demo) to find the maximum
+flow on a small example. It should serve both as an illustration of how the
+network executes Ford-Fulkerson and as a MWE on how to use the code.
