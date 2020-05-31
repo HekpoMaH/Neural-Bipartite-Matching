@@ -106,7 +106,7 @@ def reweight_batch(batch, batch_bfs, use_ints):
 def find_augmenting_path(args, batch, batch_bfs, do_not_process, processor, inv_edge_index, threshold, debug=False):
     DEVICE = get_hyperparameters()["device"]
     GRAPH_SIZES, SOURCE_NODES, SINK_NODES = utils.get_sizes_and_source_sink(batch)
-    STEPS_SIZE = GRAPH_SIZES.max()-1
+    STEPS_SIZE = GRAPH_SIZES.max()
     redo_mask = torch.ones_like(GRAPH_SIZES, device=DEVICE, dtype=torch.bool) & (~do_not_process)
     predecessors_last = torch.full_like(batch.batch, -1, device=DEVICE)
     reachable_last = torch.ones_like(predecessors_last, dtype=torch.bool)
@@ -189,7 +189,6 @@ def find_augmenting_path(args, batch, batch_bfs, do_not_process, processor, inv_
             bottleneck[do_not_process] = 0
             return path_matrix, stop_move_backward_col, bottleneck
 
-    
     bottleneck[redo_mask] = 0
     bottleneck[do_not_process] = 0 # Hack to set redo mask to false for next iterations
     return path_matrix, stop_move_backward_col, bottleneck
@@ -240,10 +239,8 @@ def augment_flow(batch, inv_edge_index, path, stop_move_backward_col, bottleneck
             if not mask.any():
                 break
             edge_idx, edge_idx_rev = get_edge_indexes(i)
-            flow[edge_idx] = old_flow[edge_index]
-            flow[edge_idx_rev] = old_flow[edge_index_rev]
-
-
+            flow[edge_idx] = old_flow[edge_idx]
+            flow[edge_idx_rev] = old_flow[edge_idx_rev]
     return needs_rerun
 
 def run(args, threshold, processor, probp=1, probq=4, savefile=True):
@@ -271,7 +268,7 @@ def run(args, threshold, processor, probp=1, probq=4, savefile=True):
                 start = time.time()
                 GRAPH_SIZES, SOURCE_NODES, SINK_NODES = utils.get_sizes_and_source_sink(batch)
                 # we make at most |V|-1 steps
-                STEPS_SIZE = GRAPH_SIZES.max()-1
+                STEPS_SIZE = GRAPH_SIZES.max()
                 inv_edge_index = utils.create_inv_edge_index(len(GRAPH_SIZES), GRAPH_SIZES.max(), batch.edge_index)
                 
                 do_not_process = torch.zeros_like(GRAPH_SIZES, dtype=torch.bool, device=DEVICE)
@@ -282,12 +279,10 @@ def run(args, threshold, processor, probp=1, probq=4, savefile=True):
                 cnt = 0
                 while (bottleneck != 0).any():
                     wrong_minus = augment_flow(batch, inv_edge_index, path_matrix, stop_move_backward_col, bottleneck, do_not_process, args["--use-neural-augmentation"], augmenting_path_network=processor.algorithms["AugmentingPath"])
+                    batch_bfs.edge_attr[:, 1] = batch.edge_attr[:, 1]
                     do_not_process |= wrong_minus
 
-
-                    # print("Augment", time.time()-start)
                     path_matrix, stop_move_backward_col, bottleneck = find_augmenting_path(args, batch, batch_bfs, do_not_process, processor, inv_edge_index, threshold)
-                    # print("FOUND", time.time() - start)
                     do_not_process |= (bottleneck == 0)
                     bottleneck[do_not_process] = 0
                     assert ((bottleneck <= 1) & (bottleneck >= 0)).all(), (bottleneck, path_matrix)

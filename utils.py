@@ -94,7 +94,7 @@ def finish(x, y, batch_ids, steps, STEPS_SIZE, GRAPH_SIZES):
     DEVICE = get_hyperparameters()["device"]
     if steps == 0:
         return torch.ones(len(GRAPH_SIZES), device=DEVICE)
-    if not steps < STEPS_SIZE:
+    if not steps < STEPS_SIZE-1:
         return torch.zeros(len(GRAPH_SIZES), device=DEVICE)
     x_curr = torch.index_select(x, 1, torch.tensor([steps], dtype=torch.long, device=DEVICE)).squeeze(1).to(DEVICE)
     y_curr = torch.index_select(y, 1, torch.tensor([steps], dtype=torch.long, device=DEVICE)).squeeze(1).to(DEVICE)
@@ -149,12 +149,32 @@ def iterate_over(processor, optimizer=None, test=False):
                     output = algorithm.process(batch, EPS_I)
                     if not processor.training:
                         algorithm.update_validation_stats(batch, output)
+
             if processor.training:
                 processor.update_weights(optimizer)
             if interrupted():
                 break
     except StopIteration: # datasets should be the same size
         pass
+
+    for algorithm in processor.algorithms.values(): # for when they are not
+        if not processor.training:
+            algorithm.zero_tracking_losses_and_statistics()
+        try:
+            while True:
+                batch = next(algorithm.iterator)
+                batch.to(DEVICE)
+                EPS_I = 0
+                start = time.time()
+                with torch.set_grad_enabled(processor.training):
+                    output = algorithm.process(batch, EPS_I)
+                    if not processor.training:
+                        algorithm.update_validation_stats(batch, output)
+                if processor.training:
+                    processor.update_weights(optimizer)
+        except StopIteration:
+            pass
+
 
 def load_algorithms(algorithms, processor, use_ints):
     hyperparameters = get_hyperparameters()
@@ -205,13 +225,13 @@ def get_walks_from_output(output, GRAPH_SIZES, SOURCE_NODES, SINK_NODES):
     path_matrix, stop_move_backward_col, final = obtain_paths(
         output,
         GRAPH_SIZES,
-        GRAPH_SIZES.max()-1,
+        GRAPH_SIZES.max(),
         SOURCE_NODES,
         SINK_NODES,
         return_path_matrix=True
     )
     mask = (path_matrix == -100)
-    path_matrix = path_matrix.where(~mask, final.repeat(GRAPH_SIZES.max()-1, 1).t())
+    path_matrix = path_matrix.where(~mask, final.repeat(GRAPH_SIZES.max(), 1).t())
     return path_matrix, stop_move_backward_col, mask
 
 def get_walks(training, batch, output, GRAPH_SIZES, SOURCE_NODES, SINK_NODES):
@@ -240,4 +260,3 @@ patience: {}
 ===============
 """
     return fmt
-

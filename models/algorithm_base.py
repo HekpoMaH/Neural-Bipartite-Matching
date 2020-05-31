@@ -127,9 +127,8 @@ class AlgorithmBase(nn.Module):
 
     def prepare_constants(self, batch):
         SIZE = batch.num_nodes
-        # we make at most |V|-1 steps
         GRAPH_SIZES, SOURCE_NODES, SINK_NODES = utils.get_sizes_and_source_sink(batch)
-        STEPS_SIZE = GRAPH_SIZES.max()-1
+        STEPS_SIZE = GRAPH_SIZES.max()
         return SIZE, GRAPH_SIZES, SOURCE_NODES, STEPS_SIZE, SINK_NODES
 
     def prepare_initial_masks(self, batch):
@@ -142,7 +141,7 @@ class AlgorithmBase(nn.Module):
     def loop_condition(self, batch_ids, x, y, STEPS_SIZE, GRAPH_SIZES):
         return (((not self.training and self.mask_cp.any()) or
                  (self.training and utils.finish(x, y, batch_ids, self.steps, STEPS_SIZE, GRAPH_SIZES).bool().any())) and
-                 self.steps < STEPS_SIZE and
+                 self.steps+1 < STEPS_SIZE and
                  not utils.interrupted())
 
     def get_training_loss(self):
@@ -167,7 +166,7 @@ class AlgorithmBase(nn.Module):
     def process(
             self,
             batch,
-            EPSILON=1,
+            EPSILON=0,
             enforced_mask=None,
             compute_losses_and_broken=True,
             debug=False):
@@ -227,4 +226,3 @@ class AlgorithmBase(nn.Module):
         correct, tot = AlgorithmBase.calculate_step_acc(output.unsqueeze(0), real.unsqueeze(0))
         self.last_step.append(correct.squeeze())
         self.last_step_total += tot.squeeze()
-

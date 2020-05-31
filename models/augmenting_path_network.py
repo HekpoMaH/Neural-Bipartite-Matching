@@ -88,7 +88,8 @@ class AugmentingPathNetwork(AlgorithmBase):
             "pred": 0,
             "dist": 0,
             "term": 0,
-            "minimum": 0
+            "minimum": 0,
+            "augment": 0
         }
 
 
@@ -229,10 +230,10 @@ class AugmentingPathNetwork(AlgorithmBase):
         denom = self.validation_sum_of_processed_nodes
         if self.bits_size is not None:
             denom *= self.bits_size
-        dist = self.validation_losses["dist"] / float(denom)
-        pred = self.validation_losses["pred"] / float(self.validation_sum_of_processed_nodes)
-        term = self.validation_losses["term"] / float(self.validation_sum_of_steps)
-        minimum = self.validation_losses["minimum"] / math.ceil(len(self.val_dataset) / float(get_hyperparameters()["batch_size"]))
+        dist = self.validation_losses["dist"] / float(denom) if self.sum_of_steps != 0 else 0
+        pred = self.validation_losses["pred"] / float(self.validation_sum_of_processed_nodes) if self.sum_of_steps != 0 else 0
+        term = self.validation_losses["term"] / float(self.validation_sum_of_steps) if self.sum_of_steps != 0 else 0
+        minimum = self.validation_losses["minimum"] / math.ceil(len(self.val_dataset) / float(get_hyperparameters()["batch_size"])) if self.sum_of_steps != 0 else 0
         return dist, pred, term, minimum
 
     @overrides
@@ -249,9 +250,9 @@ class AugmentingPathNetwork(AlgorithmBase):
         if self.bits_size is not None:
             denom *= self.bits_size
         return {
-            "dist": self.losses["dist"] / float(denom),
-            "pred": self.losses["pred"] / self.sum_of_processed_nodes,
-            "term": self.losses["term"] / self.sum_of_steps,
+            "dist": self.losses["dist"] / float(denom) if self.sum_of_steps != 0 else 0,
+            "pred": self.losses["pred"] / self.sum_of_processed_nodes if self.sum_of_steps != 0 else 0,
+            "term": self.losses["term"] / self.sum_of_steps if self.sum_of_steps != 0 else 0,
             "minimum": self.losses["minimum"] / 10.0,
             "augment": self.losses["augment"] / 10.0
         }
@@ -278,7 +279,7 @@ class AugmentingPathNetwork(AlgorithmBase):
         start = time.time()
         DEVICE = get_hyperparameters()["device"]
         GRAPH_SIZES, SOURCE_NODES, SINK_NODES = utils.get_sizes_and_source_sink(batch)
-        STEPS_SIZE = GRAPH_SIZES.max()-1
+        STEPS_SIZE = GRAPH_SIZES.max()
         _, y = self.get_input_output_features(batch, SOURCE_NODES)
         broke_flow = torch.zeros(batch.num_graphs, dtype=torch.bool, device=DEVICE)
         broke_reachability_source = torch.zeros(batch.num_graphs, dtype=torch.bool, device=DEVICE)
@@ -463,7 +464,6 @@ class AugmentingPathNetwork(AlgorithmBase):
         else:
             current_input = current_input.unsqueeze(1)
 
-        
         inp = torch.cat((current_input, last_latent), dim=1)
 
         encoded_nodes = self.node_encoder(inp)

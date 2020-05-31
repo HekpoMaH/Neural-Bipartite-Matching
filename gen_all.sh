@@ -21,7 +21,7 @@ mkdir -p graph_only_BFS_less_wired_1_2/processed
 mkdir -p graph_only_BFS_less_wired_1_5/processed
 mkdir -p graph_only_BFS_less_wired_3_4/processed
 
-ln -s ../all_iter_less_wired/raw ./bfs_less_wired/
+cp -r all_iter_less_wired/raw ./bfs_less_wired/
 
 ln -s ../all_iter_less_wired/raw ./graph_only_less_wired/
 ln -s ../all_iter_less_wired_1_2/raw ./graph_only_less_wired_1_2/
