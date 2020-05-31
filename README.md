@@ -88,6 +88,9 @@ probability than 1/4 have their numerator and denominator appended
 after dataset name. Inside each dataset, raw and processed data is provided at
 different scales.
 
+Once you want to generate the extra training data for the PNA, run
+`./gen_extra.sh 8 8 bfs_less_wired 1 4`.
+
 For obtaining the pre-trained models, run `unzip models_to_test.zip`. The
 folder is organised hierarchically -- first level splits on GNN architecture
 type. Second level -- whether reachability is learnt. AugmentingPath
