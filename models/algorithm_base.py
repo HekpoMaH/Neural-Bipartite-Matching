@@ -172,6 +172,7 @@ class AlgorithmBase(nn.Module):
             debug=False):
 
         DEVICE = get_hyperparameters()["device"]
+        enforced_mask = enforced_mask.to(DEVICE)
         train = self.training
         SIZE, GRAPH_SIZES, SOURCE_NODES, STEPS_SIZE, SINK_NODES = self.prepare_constants(batch)
 

@@ -450,8 +450,19 @@ class AugmentingPathNetwork(AlgorithmBase):
             return actual_mincaps
         argmins = mins.argmax(dim=1) # yes, mins are logits for the min position, hence argmax
         mincaps = attrs[torch.arange(batch.num_graphs), argmins, 1]
-        TN = torch_geometric.utils.true_negative(mincaps[~no_step_mask], actual_mincaps[~no_step_mask], 2).sum()
-        FP = torch_geometric.utils.false_positive(mincaps[~no_step_mask], actual_mincaps[~no_step_mask], 2).sum()
+        def true_negatives(preds, actual):
+            preds_bin = (preds < 0.5).float()  # Assuming predictions are probabilities
+            actual_bin = actual.float()
+            TN = ((preds_bin == 0) & (actual_bin == 0))
+            return TN
+
+        def false_positives(preds, actual):
+            preds_bin = (preds >= 0.5).float()  # Assuming predictions are probabilities
+            actual_bin = actual.float()
+            FP = ((preds_bin == 1) & (actual_bin == 0))
+            return FP
+        TN = true_negatives(mincaps[~no_step_mask], actual_mincaps[~no_step_mask]).sum()
+        FP = false_positives(mincaps[~no_step_mask], actual_mincaps[~no_step_mask]).sum()
         self.mincaps_FP += FP
         self.mincaps_TN += TN
         return mincaps

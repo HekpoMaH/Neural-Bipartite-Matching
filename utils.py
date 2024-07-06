@@ -216,7 +216,7 @@ def bit2integer(bit_logits):
     return ints
 
 def create_inv_edge_index(batch_size, size, edge_index):
-    iei = torch.full((batch_size*size, batch_size*size), -100, dtype=torch.long)
+    iei = torch.full((batch_size*size, batch_size*size), -100, dtype=torch.long, device=edge_index.device)
     for i in range(len(edge_index[0])):
         iei[edge_index[0][i]][edge_index[1][i]] = i
     return iei

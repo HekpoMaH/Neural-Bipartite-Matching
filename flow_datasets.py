@@ -66,6 +66,9 @@ class GraphDatasetBase(Dataset):
             self.process()
         return (len([_ for _ in os.listdir(self.processed_dir+'/'+self.split)]))
 
+    def len(self):
+        return self.__len__()
+
     def process_augmenting_iteration(self, file_handle, s, n):
             metadata = {}
             metadata['weights'] = torch.tensor([float(x) for x in file_handle.readline().split()])
